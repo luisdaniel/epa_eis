@@ -26,15 +26,16 @@ def save_files():
     with open('reports.csv', mode='r') as infile:
         reader = csv.reader(infile)
         for row in reader:
-            if row[21] != 'list_of_links' and row[20] !=0:
+            if row[19] != 'comment_letter_links' and row[19] != '':
                 print "Getting links for: " + row[5]
-                links = row[21].split()
+                links = row[19].split()
                 for link in links:
                     try:
                         k = Key(bucket)
                         file_name = urllib2.unquote(link)
-                        file_name = file_name[file_name.index('$file')+6:].replace(".pdf","")
-                        file_name = re.sub(r'([^\s\w])+', '', file_name).replace(" ", "-").lower() + ".pdf"
+                        file_name = file_name[file_name.index('$file')+6:].replace(".pdf","").replace(".PDF", "")
+                        file_name = re.sub(r'([^\s\w])+', '', file_name)
+                        file_name = file_name.strip().replace(" ", "-").lower() + ".pdf"
                         file_name = row[1].replace("/", "-") + "/" + row[7] + "/" + file_name
                         print "Saving: " + file_name
                         if bucket.get_key(file_name):
@@ -54,4 +55,4 @@ def save_files():
 save_files()
 
 if df_missing_files.shape[0]:
-    df_missing_files.to_csv('missing_files_to_save.csv', encoding='utf-8')
+    df_missing_files.to_csv('missing_comment_letters_to_save.csv', encoding='utf-8')
